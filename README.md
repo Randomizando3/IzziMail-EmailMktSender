@@ -1,81 +1,134 @@
-[b]Enviador de Emails - Email Marketing Campaign Manager[/b]
+# Enviador de Emails - Email Marketing Campaign Manager
 
-[i]Descrição[/i]
+## Descrição
 
-Este é um sistema completo de [b]gestão de campanhas de email marketing[/b]. Ele permite criar listas de emails, enviar campanhas personalizadas e acompanhar estatísticas de desempenho, como [b]aberturas[/b] e [b]cliques[/b] dos emails enviados. O projeto foi desenvolvido usando [b]Node.js[/b] para o backend e [b]MySQL/MariaDB[/b] como banco de dados. O frontend é desenvolvido em [b]HTML[/b], [b]CSS[/b] (Bootstrap) e [b]JavaScript[/b], fornecendo uma interface simples e eficiente para gerenciar campanhas de marketing por email.
+Este é um sistema completo de **gestão de campanhas de email marketing**. Ele permite criar listas de emails, enviar campanhas personalizadas e acompanhar estatísticas de desempenho, como **aberturas** e **cliques** dos emails enviados. O projeto foi desenvolvido usando **Node.js** para o backend e **MySQL/MariaDB** como banco de dados. O frontend é desenvolvido em **HTML**, **CSS** (Bootstrap) e **JavaScript**, fornecendo uma interface simples e eficiente para gerenciar campanhas de marketing por email.
 
-[i]Funcionalidades[/i]
+## Funcionalidades
 
-- [b]Login de administrador[/b]: Proteção do sistema com autenticação simples.
-- [b]Gestão de listas de emails[/b]: Criar, editar, remover e importar listas de emails de contatos.
-- [b]Envio de campanhas[/b]: Criação e envio de campanhas de email, com conteúdo HTML dinâmico.
-- [b]Estatísticas de campanhas[/b]: Relatórios de emails enviados, abertos e cliques em links dos emails.
-- [b]Progressão de envio[/b]: Barra de progresso para acompanhar o envio das campanhas.
-- [b]Personalização de emails[/b]: Suporte a placeholders como [code]{first_name}[/code], [code]{last_name}[/code], [code]{email}[/code], e [code]{phone}[/code] no conteúdo das campanhas, substituindo pelos dados reais dos destinatários.
-- [b]Importação de contatos via CSV[/b]: Possibilidade de adicionar contatos em massa a partir de arquivos CSV.
+- **Login de administrador**: Proteção do sistema com autenticação simples.
+- **Gestão de listas de emails**: Criar, editar, remover e importar listas de emails de contatos.
+- **Envio de campanhas**: Criação e envio de campanhas de email, com conteúdo HTML dinâmico.
+- **Estatísticas de campanhas**: Relatórios de emails enviados, abertos e cliques em links dos emails.
+- **Progressão de envio**: Barra de progresso para acompanhar o envio das campanhas.
+- **Personalização de emails**: Suporte a placeholders como `{first_name}`, `{last_name}`, `{email}`, e `{phone}` no conteúdo das campanhas, substituindo pelos dados reais dos destinatários.
+- **Importação de contatos via CSV**: Possibilidade de adicionar contatos em massa a partir de arquivos CSV.
 
-[i]Tecnologias Utilizadas[/i]
+## Tecnologias Utilizadas
 
-- [b]Node.js[/b]: Usado para o backend, com gerenciamento de rotas e integração com o banco de dados.
-- [b]Express.js[/b]: Framework para criação de rotas e manipulação de requisições HTTP.
-- [b]MySQL/MariaDB[/b]: Banco de dados relacional usado para armazenar listas de emails, estatísticas de campanhas e detalhes dos usuários.
-- [b]Nodemailer[/b]: Biblioteca usada para o envio de emails através de servidores SMTP.
-- [b]Bootstrap[/b]: Usado no frontend para estilizar a interface e torná-la responsiva.
-- [b]JavaScript (Frontend)[/b]: Manipulação do DOM e requisições AJAX para o backend.
-- [b]Multer[/b]: Biblioteca para upload de arquivos, usada para importação de contatos via CSV.
+- **Node.js**: Usado para o backend, com gerenciamento de rotas e integração com o banco de dados.
+- **Express.js**: Framework para criação de rotas e manipulação de requisições HTTP.
+- **MySQL/MariaDB**: Banco de dados relacional usado para armazenar listas de emails, estatísticas de campanhas e detalhes dos usuários.
+- **Nodemailer**: Biblioteca usada para o envio de emails através de servidores SMTP.
+- **Bootstrap**: Usado no frontend para estilizar a interface e torná-la responsiva.
+- **JavaScript (Frontend)**: Manipulação do DOM e requisições AJAX para o backend.
+- **Multer**: Biblioteca para upload de arquivos, usada para importação de contatos via CSV.
 
-[i]Estrutura do Projeto[/i]
+## Estrutura do Projeto
 
-- [b]Backend[/b]
-  - Gerencia o envio de emails, processamento de listas, coleta de estatísticas e autenticação.
-  - Arquivos importantes:
-    - [code]app.js[/code]: Configuração e inicialização do servidor Express.
-    - [code]controllers/emailController.js[/code]: Lógica de envio de emails e gestão de campanhas.
-    - [code]routes/emailRoutes.js[/code]: Define as rotas da API REST para gerenciamento de listas, envio de emails e estatísticas.
-    - [code]config/database.js[/code]: Conexão com o banco de dados MySQL/MariaDB.
-  
-- [b]Frontend[/b]
-  - Formulários para criação de campanhas, gestão de listas e visualização de estatísticas.
-  - Arquivos importantes:
-    - [code]public/envio.html[/code]: Página para envio de campanhas.
-    - [code]public/dashboard.html[/code]: Dashboard principal com resumo de estatísticas de campanhas.
-    - [code]public/listas.html[/code]: Gerenciamento de listas de emails.
-    - [code]public/css/[/code]: Estilos CSS personalizados.
+### Backend
 
-[i]Pré-requisitos[/i]
+Gerencia o envio de emails, processamento de listas, coleta de estatísticas e autenticação.
 
-- [b]Node.js[/b] (v16+)
-- [b]MySQL ou MariaDB[/b]
-- [b]Nodemailer[/b] configurado com um servidor SMTP (Mailgun, Gmail, etc.)
+- **Arquivos importantes**:
+  - `app.js`: Configuração e inicialização do servidor Express.
+  - `controllers/emailController.js`: Lógica de envio de emails e gestão de campanhas.
+  - `routes/emailRoutes.js`: Define as rotas da API REST para gerenciamento de listas, envio de emails e estatísticas.
+  - `config/database.js`: Conexão com o banco de dados MySQL/MariaDB.
 
-[i]Instalação[/i]
+### Frontend
+
+Formulários para criação de campanhas, gestão de listas e visualização de estatísticas.
+
+- **Arquivos importantes**:
+  - `public/envio.html`: Página para envio de campanhas.
+  - `public/dashboard.html`: Dashboard principal com resumo de estatísticas de campanhas.
+  - `public/listas.html`: Gerenciamento de listas de emails.
+  - `public/css/`: Estilos CSS personalizados.
+
+## Pré-requisitos
+
+- **Node.js** (v16+)
+- **MySQL ou MariaDB**
+- **Nodemailer** configurado com um servidor SMTP (Mailgun, Gmail, etc.)
+
+## Instalação
 
 1. Clone este repositório:
-
-[code]
-git clone https://github.com/usuario/enviador-emails.git
-cd enviador-emails
-[/code]
+   ```bash
+   git clone https://github.com/usuario/enviador-emails.git
+   cd enviador-emails
+   ```
 
 2. Instale as dependências:
-
-[code]
-npm install
-[/code]
+    ```bash
+    Copiar código
+    npm install
+    ```
 
 3. Configure o banco de dados MySQL/MariaDB:
 
-- Crie um banco de dados chamado [b]email_marketing[/b].
-- Importe o arquivo SQL com a estrutura do banco:
-   
-[code]
-mysql -u root -p email_marketing < db_structure.sql
-[/code]
+Crie um banco de dados e utilize esta estrutura
 
-4. Configure o arquivo [code]config/database.js[/code] com as credenciais do banco de dados:
+```bash
+    -- Tabela para armazenar as campanhas de e-mail
+    CREATE TABLE IF NOT EXISTS campaigns (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      subject VARCHAR(255) NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+    
+    -- Tabela para armazenar listas de e-mails
+    CREATE TABLE IF NOT EXISTS email_lists (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      name VARCHAR(255) NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+    
+    -- Tabela para armazenar os destinatários das listas de e-mails
+    CREATE TABLE IF NOT EXISTS email_list_recipients (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      list_id INT NOT NULL,
+      first_name VARCHAR(100),
+      last_name VARCHAR(100),
+      email VARCHAR(255) NOT NULL,
+      phone VARCHAR(20),
+      FOREIGN KEY (list_id) REFERENCES email_lists(id) ON DELETE CASCADE
+    );
+    
+    -- Tabela para armazenar as estatísticas dos e-mails enviados
+    CREATE TABLE IF NOT EXISTS email_stats (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      email VARCHAR(255) NOT NULL,
+      subject VARCHAR(255),
+      message TEXT,
+      list_id INT,
+      sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      opened BOOLEAN DEFAULT FALSE,
+      clicked BOOLEAN DEFAULT FALSE,
+      rejected BOOLEAN DEFAULT FALSE,
+      FOREIGN KEY (list_id) REFERENCES email_lists(id) ON DELETE SET NULL
+    );
+    
+    -- Índices para melhorar a busca por destinatários e estatísticas
+    CREATE INDEX idx_email ON email_list_recipients (email);
+    CREATE INDEX idx_list_id ON email_list_recipients (list_id);
+    CREATE INDEX idx_subject ON email_stats (subject);
+    
+    -- Tabela para armazenar as mensagens rastreadas por abertura e cliques
+    CREATE TABLE IF NOT EXISTS email_tracking (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      email VARCHAR(255) NOT NULL,
+      campaign_id INT,
+      opened_at TIMESTAMP NULL,
+      clicked_at TIMESTAMP NULL,
+      FOREIGN KEY (campaign_id) REFERENCES campaigns(id) ON DELETE SET NULL
+    );
+```
 
-[code]
-import mysql from 'mysql2';
+4. Configure o arquivo config/database.js com as credenciais do banco de dados:
+```bash
+  import mysql from 'mysql2';
 
 const pool = mysql.createPool({
   host: 'localhost',
@@ -83,29 +136,23 @@ const pool = mysql.createPool({
   password: 'sua_senha',
   database: 'email_marketing',
 });
-
 export default pool.promise();
-[/code]
+```
+
 
 5. Execute o servidor:
-
-[code]
-npm start
-[/code]
+```bash
+  npm start
+```
 
 6. Acesse o sistema pelo navegador:
-
-[code]
+```bash
 http://localhost:3000
-[/code]
+```
 
-[i]Uso[/i]
 
-1. Faça login como administrador ([b]admin@admin.com[/b] / [b]12345678[/b]).
-2. Crie listas de emails na aba "Listas".
-3. Crie campanhas na aba "Envio de Campanhas", e acompanhe o progresso.
-4. Acesse as estatísticas de campanhas enviadas no "Dashboard".
-
-[i]Licença[/i]
-
-Este projeto está licenciado sob a licença MIT. Veja o arquivo [code]LICENSE[/code] para mais detalhes.
+## Uso
+- Faça login como administrador (admin@admin.com/ 12345678).
+- Crie listas de emails na aba "Listas".
+- Crie campanhas na aba "Envio de Campanhas", e acompanhe o progresso.
+- Acesse as estatísticas de campanhas enviadas no "Dashboard".
