@@ -219,7 +219,7 @@ router.get('/lists/:id/recipients/count', async (req, res) => {
 router.post('/login', (req, res) => {
   const { email, password } = req.body;
 
-  if (email === 'admin@cadastrodeempresas.com' && password === 'sist2016!') {
+  if (email === 'admin@admin' && password === '12345678') {
     req.session.loggedIn = true; // Definir a sessão de login
     res.status(200).json({ message: 'Login bem-sucedido' });
   } else {
