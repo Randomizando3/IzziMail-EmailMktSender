@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Listas de Emails - Enviador de Emails</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f8f9fa;
+    }
+    .navbar {
+      margin-bottom: 30px;
+    }
+    .table-container {
+      margin-top: 20px;
+      padding: 20px;
+      border-radius: 8px;
+      background-color: #fff;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .footer {
+      text-align: center;
+      padding: 20px 0;
+      background-color: #343a40;
+      color: white;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+    .loading-spinner {
+      display: none; /* Esconder o spinner inicialmente */
+      text-align: center;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+ <!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">Izzimail</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="dashboard.html">Dashboard</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="listas.html">Listas de Emails</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="envio.html">Envio de Campanhas</a>
+        </li>
+        <!-- Item com Dropdown para Editar HTML -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="editarHtmlDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Editar HTML
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="editarHtmlDropdown">
+            <li><a class="dropdown-item" href="https://my.stripo.email/login?locale=pt" target="_blank">Editor Stripo</a></li>
+            <li><a class="dropdown-item" href="https://mosaico.io/" target="_blank">Editor Mosaico</a></li>
+          </ul>
+        </li>
+      </ul>
+      <span class="navbar-text">
+        Bem-vindo, Administrador
+      </span>
+    </div>
+  </div>
+</nav>
+
+
+  <!-- Main Content - Listas de Emails -->
+  <div class="container">
+    <div class="table-container">
+      <h2 class="mb-4">Listas de Emails</h2>
+
+      <!-- Formulário para criar nova lista -->
+      <div class="mb-3">
+        <input type="text" id="newListName" class="form-control" placeholder="Nome da nova lista">
+        <button class="btn btn-success mt-2" onclick="createList()">Criar Nova Lista</button>
+      </div>
+
+      <!-- Formulário para upload de CSV -->
+      <div class="mb-3">
+        <h5>Importar Contatos (CSV)</h5>
+        <input type="file" id="csvFileInput" accept=".csv" class="form-control">
+        <button class="btn btn-primary mt-2" onclick="importCsv()">Importar CSV</button>
+        <!-- Spinner de carregamento -->
+        <div class="loading-spinner" id="loadingSpinner">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Enviando...</span>
+          </div>
+          <p>Enviando arquivo CSV, por favor aguarde...</p>
+        </div>
+      </div>
+
+      <table class="table table-hover">
+        <thead class="table-dark">
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Nome da Lista</th>
+            <th scope="col">Emails na Lista</th>
+            <th scope="col">Data de Criação</th>
+            <th scope="col">Ações</th>
+          </tr>
+        </thead>
+        <tbody id="listTableBody">
+          <!-- As listas serão inseridas dinamicamente aqui -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Modal para exibir contatos da lista -->
+  <div class="modal fade" id="recipientsModal" tabindex="-1" aria-labelledby="recipientsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="recipientsModalLabel">Contatos da Lista</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Email</th>
+                <th>Telefone</th>
+              </tr>
+            </thead>
+            <tbody id="recipientsTableBody">
+              <!-- Os contatos serão inseridos dinamicamente aqui -->
+            </tbody>
+          </table>
+          <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center" id="pagination">
+              <!-- Paginação será inserida aqui -->
+            </ul>
+          </nav>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="closeModalAndRemoveBackdrops()">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer bg-dark text-white">
+    &copy; 2024 Enviador de Emails - Todos os direitos reservados.
+  </footer>
+
+  <!-- JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    let currentPage = 1;
+    let totalPages = 1; // Adicionar controle global de totalPages
+    const limit = 50; // Número de contatos por página
+
+    // Carregar listas de emails na tabela
+    function loadLists() {
+      fetch('/emails/lists')
+        .then(response => response.json())
+        .then(data => {
+          const tbody = document.getElementById('listTableBody');
+          tbody.innerHTML = ''; // Limpar a tabela antes de popular
+
+          data.lists.forEach((list, index) => {
+            tbody.innerHTML += `
+              <tr>
+                <th scope="row">${list.id}</th>
+                <td>${list.name}</td>
+                <td><a href="#" onclick="showRecipients(${list.id})">${list.email_count}</a></td>
+                <td>${new Date(list.created_at).toLocaleDateString()}</td>
+                <td>
+                  <button class="btn btn-danger btn-sm" onclick="deleteList(${list.id})">Excluir</button>
+                </td>
+              </tr>
+            `;
+          });
+        })
+        .catch(error => console.error('Erro ao carregar listas:', error));
+    }
+
+    // Função para criar nova lista
+    function createList() {
+      const name = document.getElementById('newListName').value;
+      if (!name) {
+        alert('Por favor, insira um nome para a nova lista.');
+        return;
+      }
+
+      fetch('/emails/lists', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.message) {
+          alert(data.message);
+          loadLists();  // Recarregar as listas após criar uma nova
+        }
+      })
+      .catch(error => console.error('Erro ao criar lista:', error));
+    }
+
+    // Função para deletar uma lista
+    function deleteList(id) {
+      if (confirm('Tem certeza de que deseja excluir esta lista?')) {
+        fetch(`/emails/lists/${id}`, {
+          method: 'DELETE',
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.message) {
+            alert(data.message);
+            loadLists();  // Recarregar as listas após deletar
+          }
+        })
+        .catch(error => console.error('Erro ao excluir lista:', error));
+      }
+    }
+
+    // Função para importar o CSV
+    function importCsv() {
+      const csvFile = document.getElementById('csvFileInput').files[0];
+      const listId = prompt('Insira o ID da lista à qual os contatos serão adicionados');
+
+      if (!csvFile || !listId) {
+        alert('Selecione um arquivo CSV e forneça um ID de lista.');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('csv', csvFile);
+      formData.append('listId', listId);
+
+      const loadingSpinner = document.getElementById('loadingSpinner');
+      loadingSpinner.style.display = 'block';  // Mostrar o spinner durante o envio
+
+      fetch('/emails/import-csv', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.message) {
+          alert(data.message);
+          loadingSpinner.style.display = 'none';  // Ocultar o spinner após a conclusão
+          loadLists();  // Recarregar as listas após importar
+        }
+      })
+      .catch(error => {
+        console.error('Erro ao importar CSV:', error);
+        alert('Erro ao importar o arquivo CSV. Tente novamente.');
+        loadingSpinner.style.display = 'none';  // Ocultar o spinner em caso de erro
+      });
+    }
+
+    // Função para fechar o modal e remover as divs "modal-backdrop"
+    function closeModalAndRemoveBackdrops() {
+      const modals = document.querySelectorAll('.modal-backdrop');
+      modals.forEach(modal => modal.remove()); // Remove os backdrop modais
+      const recipientsModal = new bootstrap.Modal(document.getElementById('recipientsModal'));
+      recipientsModal.hide(); // Garante que o modal seja fechado corretamente
+    }
+
+    // Função para exibir os contatos de uma lista com paginação
+    function showRecipients(listId, page = 1) {
+      fetch(`/emails/lists/${listId}/recipients?limit=${limit}&page=${page}`)
+        .then(response => response.json())
+        .then(data => {
+          const recipientsTableBody = document.getElementById('recipientsTableBody');
+          const pagination = document.getElementById('pagination');
+          recipientsTableBody.innerHTML = ''; // Limpar a tabela antes de popular
+          pagination.innerHTML = ''; // Limpar a paginação
+
+          totalPages = data.totalPages; // Definir o número total de páginas
+
+          // Preencher a tabela com os contatos
+          data.recipients.forEach((recipient) => {
+            recipientsTableBody.innerHTML += `
+              <tr>
+                <td>${recipient.first_name} ${recipient.last_name}</td>
+                <td>${recipient.email}</td>
+                <td>${recipient.phone}</td>
+              </tr>
+            `;
+          });
+
+          // Criar navegação para a paginação
+          if (data.totalPages > 1) {
+            if (data.currentPage > 1) {
+              pagination.innerHTML += `
+                <li class="page-item">
+                  <a class="page-link" href="#" onclick="showRecipients(${listId}, ${data.currentPage - 1})">Anterior</a>
+                </li>`;
+            }
+
+            // Exibir primeiras duas páginas, últimas duas e o botão para a página atual
+            if (data.totalPages <= 5) {
+              for (let i = 1; i <= data.totalPages; i++) {
+                pagination.innerHTML += `
+                  <li class="page-item ${i === data.currentPage ? 'active' : ''}">
+                    <a class="page-link" href="#" onclick="showRecipients(${listId}, ${i})">${i}</a>
+                  </li>`;
+              }
+            } else {
+              pagination.innerHTML += `
+                <li class="page-item ${1 === data.currentPage ? 'active' : ''}">
+                  <a class="page-link" href="#" onclick="showRecipients(${listId}, 1)">1</a>
+                </li>`;
+              pagination.innerHTML += `
+                <li class="page-item ${2 === data.currentPage ? 'active' : ''}">
+                  <a class="page-link" href="#" onclick="showRecipients(${listId}, 2)">2</a>
+                </li>`;
+              
+              // Colocar a página atual no centro
+              if (data.currentPage > 2 && data.currentPage < data.totalPages - 1) {
+                pagination.innerHTML += `
+                  <li class="page-item active">
+                    <a class="page-link" href="#">${data.currentPage}</a>
+                  </li>`;
+              }
+
+              pagination.innerHTML += `
+                <li class="page-item ${data.totalPages - 1 === data.currentPage ? 'active' : ''}">
+                  <a class="page-link" href="#" onclick="showRecipients(${listId}, ${data.totalPages - 1})">${data.totalPages - 1}</a>
+                </li>`;
+              pagination.innerHTML += `
+                <li class="page-item ${data.totalPages === data.currentPage ? 'active' : ''}">
+                  <a class="page-link" href="#" onclick="showRecipients(${listId}, ${data.totalPages})">${data.totalPages}</a>
+                </li>`;
+            }
+
+            if (data.currentPage < data.totalPages) {
+              pagination.innerHTML += `
+                <li class="page-item">
+                  <a class="page-link" href="#" onclick="showRecipients(${listId}, ${data.currentPage + 1})">Próximo</a>
+                </li>`;
+            }
+
+            // Campo para ir para página específica e botão de procurar
+            pagination.innerHTML += `
+              <li class="page-item">
+                <input type="number" id="pageInput" class="form-control" min="1" max="${data.totalPages}" placeholder="Página" 
+                       style="width: 80px;">
+              </li>
+              <li class="page-item">
+                <button class="btn btn-primary" onclick="jumpToPage(${listId})">Procurar</button>
+              </li>`;
+          }
+
+          // Exibir o modal com os contatos
+          const recipientsModal = new bootstrap.Modal(document.getElementById('recipientsModal'));
+          recipientsModal.show();
+
+          // Evento para garantir a remoção da *backdrop* ao fechar o modal
+          recipientsModal._element.addEventListener('hidden.bs.modal', closeModalAndRemoveBackdrops);
+        })
+        .catch(error => console.error('Erro ao carregar os contatos:', error));
+    }
+
+    // Função para ir para uma página específica
+    function jumpToPage(listId) {
+      const pageInput = document.getElementById('pageInput').value;
+      const page = parseInt(pageInput, 10);
+      if (page >= 1 && page <= totalPages) {
+        showRecipients(listId, page);
+      } else {
+        alert(`Por favor, insira um número de página válido entre 1 e ${totalPages}.`);
+      }
+    }
+
+    // Carregar as listas de emails quando a página for carregada
+    window.onload = loadLists;
+  </script>
+</body>
+</html>

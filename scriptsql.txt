@@ -1,0 +1,53 @@
+-- Tabela para armazenar as campanhas de e-mail
+CREATE TABLE IF NOT EXISTS campaigns (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  subject VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabela para armazenar listas de e-mails
+CREATE TABLE IF NOT EXISTS email_lists (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabela para armazenar os destinatários das listas de e-mails
+CREATE TABLE IF NOT EXISTS email_list_recipients (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  list_id INT NOT NULL,
+  first_name VARCHAR(100),
+  last_name VARCHAR(100),
+  email VARCHAR(255) NOT NULL,
+  phone VARCHAR(20),
+  FOREIGN KEY (list_id) REFERENCES email_lists(id) ON DELETE CASCADE
+);
+
+-- Tabela para armazenar as estatísticas dos e-mails enviados
+CREATE TABLE IF NOT EXISTS email_stats (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  email VARCHAR(255) NOT NULL,
+  subject VARCHAR(255),
+  message TEXT,
+  list_id INT,
+  sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  opened BOOLEAN DEFAULT FALSE,
+  clicked BOOLEAN DEFAULT FALSE,
+  rejected BOOLEAN DEFAULT FALSE,
+  FOREIGN KEY (list_id) REFERENCES email_lists(id) ON DELETE SET NULL
+);
+
+-- Índices para melhorar a busca por destinatários e estatísticas
+CREATE INDEX idx_email ON email_list_recipients (email);
+CREATE INDEX idx_list_id ON email_list_recipients (list_id);
+CREATE INDEX idx_subject ON email_stats (subject);
+
+-- Tabela para armazenar as mensagens rastreadas por abertura e cliques
+CREATE TABLE IF NOT EXISTS email_tracking (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  email VARCHAR(255) NOT NULL,
+  campaign_id INT,
+  opened_at TIMESTAMP NULL,
+  clicked_at TIMESTAMP NULL,
+  FOREIGN KEY (campaign_id) REFERENCES campaigns(id) ON DELETE SET NULL
+);
