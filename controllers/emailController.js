@@ -25,20 +25,24 @@ const transporter = nodemailer.createTransport({
 
 // Função para transformar links em tags <a> em links rastreáveis
 function trackLinksInAnchorTags(htmlContent, email) {
-  // Substitui apenas links em tags <a>, ignorando imagens e outros elementos
   const linkPattern = /<a\s+(?:[^>]*?\s+)?href="(https?:\/\/[^"]+)"/g;
 
   return htmlContent.replace(linkPattern, (match, url) => {
     const encodedUrl = encodeURIComponent(url);
-    return match.replace(url, `http://localhost:3000/emails/clicked?email=${encodeURIComponent(email)}&url=${encodedUrl}`);
+    return match.replace(url, `https://cadastrodeempresas.com/emails/clicked?email=${encodeURIComponent(email)}&url=${encodedUrl}`);
   });
+}
+
+// Função para validar e-mails
+function validateEmail(email) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
 }
 
 // Função para enviar e-mails
 export async function sendEmails(req, res) {
   const { senderName, senderEmail, subject, message, listId } = req.body;
 
-  // Verifica se já há um envio em andamento
   if (estimatedEndTimes[listId] && new Date() < estimatedEndTimes[listId]) {
     return res.status(400).json({
       message: `Envio em andamento. O próximo envio só poderá ser iniciado após ${estimatedEndTimes[listId].toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}.`
@@ -52,29 +56,30 @@ export async function sendEmails(req, res) {
       return res.status(400).json({ message: 'Nenhum destinatário na lista selecionada.' });
     }
 
-    // Calcula o horário de término
     const totalSeconds = recipients.length * 3; // 3 segundos por email
     const estimatedEndTime = new Date();
     estimatedEndTime.setSeconds(estimatedEndTime.getSeconds() + totalSeconds);
     estimatedEndTimes[listId] = estimatedEndTime;
 
-    // Verifica se o progresso do envio já existe para essa lista
     let lastSentIndex = sendingProgress[listId] || 0;
 
     for (let i = lastSentIndex; i < recipients.length; i++) {
       const email = recipients[i];
 
-      // Substituição dos placeholders {first_name}, {last_name}, {email}, e {phone}
+      // Validação do destinatário
+      if (!email.email || email.email.trim() === '' || !validateEmail(email.email)) {
+        console.error(`Email inválido ou vazio para o destinatário: ${email.first_name} ${email.last_name}`);
+        continue; // Pular este destinatário e continuar para o próximo
+      }
+
       let personalizedMessage = message
         .replace(/{first_name}/g, email.first_name || '')
         .replace(/{last_name}/g, email.last_name || '')
         .replace(/{email}/g, email.email || '')
         .replace(/{phone}/g, email.phone || '');
 
-      // Rastreamento de links nas tags <a>, ignorando imagens e outros elementos
       personalizedMessage = trackLinksInAnchorTags(personalizedMessage, email.email);
 
-      // Adicionar pixel de rastreamento de abertura
       const trackingPixel = `<img src="https://cadastrodeempresas.com/emails/opened?email=${encodeURIComponent(email.email)}&t=${new Date().getTime()}" width="1" height="1" style="display:none;" />`;
 
       const finalMessage = `${personalizedMessage}${trackingPixel}`;
@@ -86,14 +91,19 @@ export async function sendEmails(req, res) {
         from: `${senderName} <${senderEmail}>`,
         to: email.email,
         subject,
-        html: finalMessage,  // HTML com o pixel de rastreamento
+        html: finalMessage,
       };
 
-      // Enviar o email
-      await transporter.sendMail(mailOptions);
+      try {
+        // Enviar o email
+        await transporter.sendMail(mailOptions);
 
-      // Registrar o email enviado no banco de dados
-      await EmailStats.recordEmailSent(email.email, subject, finalMessage, listId);
+        // Registrar o email enviado no banco de dados
+        await EmailStats.recordEmailSent(email.email, subject, finalMessage, listId);
+
+      } catch (error) {
+        console.error(`Erro ao enviar email para ${email.email}: ${error.message}`);
+      }
 
       // Atualiza o progresso de envio
       sendingProgress[listId] = i;
@@ -102,7 +112,6 @@ export async function sendEmails(req, res) {
       await new Promise((r) => setTimeout(r, 3000));
     }
 
-    // Reseta o progresso após completar o envio
     sendingProgress[listId] = 0;
     estimatedEndTimes[listId] = null;
 
@@ -120,11 +129,9 @@ export async function registerOpened(req, res) {
   try {
     console.log(`Registro de abertura para o email: ${email}`);
 
-    // Registrar abertura no banco de dados
     const result = await EmailStats.recordOpened(email);
     console.log("Abertura registrada:", result);
 
-    // Retornar a imagem do pixel (pode ser um PNG transparente)
     const pixelPath = './public/assets/pixel.png';
     fs.readFile(pixelPath, (err, data) => {
       if (err) {
@@ -147,14 +154,11 @@ export async function registerClicked(req, res) {
   try {
     console.log(`Registro de clique para o email: ${email}, URL: ${url}`);
 
-    // Registrar clique no banco de dados
     const result = await EmailStats.recordClicked(email);
     console.log("Clique registrado:", result);
 
-    // Decodificar o URL original antes de redirecionar
     const decodedUrl = decodeURIComponent(url);
 
-    // Redirecionar o usuário para o link original
     res.redirect(decodedUrl);
   } catch (error) {
     console.error("Erro ao registrar clique em email:", error);
@@ -175,7 +179,13 @@ export async function importCSV(req, res) {
     .pipe(csv())
     .on('data', (row) => {
       const { first_name, last_name, email, phone } = row;
-      emails.push({ first_name, last_name, email, phone });
+
+      // Validação de email
+      if (validateEmail(email)) {
+        emails.push({ first_name, last_name, email, phone });
+      } else {
+        console.error(`Email inválido encontrado e ignorado: ${email}`);
+      }
     })
     .on('end', async () => {
       try {
